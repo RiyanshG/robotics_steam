@@ -42,8 +42,9 @@ basic.forever(function () {
             GoForward()
             direction = 1
         }
-    } else if (hummingbird.getSensor(SensorType.Light, ThreePort.One) > 35 && direction == -1) {
-    	
+    } else if (hummingbird.getSensor(SensorType.Light, ThreePort.One) > 35 && direction == 1) {
+        Stop()
+        direction = 0
     }
 })
 basic.forever(function () {
