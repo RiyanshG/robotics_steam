@@ -34,6 +34,15 @@ basic.forever(function () {
     PoliceLED()
 })
 basic.forever(function () {
+    if (direction == 0) {
+        hummingbird.setLED(ThreePort.One, 100)
+        hummingbird.setLED(ThreePort.Two, 100)
+    } else {
+        hummingbird.setLED(ThreePort.One, 0)
+        hummingbird.setLED(ThreePort.Two, 0)
+    }
+})
+basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.One) < 30) {
         if (direction == 1) {
             Stop()
