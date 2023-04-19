@@ -32,31 +32,66 @@ function GoForward () {
     hummingbird.setRotationServo(FourPort.One, 100)
     hummingbird.setRotationServo(FourPort.Two, -55)
 }
+function Turn (motor1: number, motor2: number) {
+    hummingbird.setRotationServo(FourPort.One, motor1)
+    hummingbird.setRotationServo(FourPort.Two, motor2)
+    basic.pause(1000)
+    hummingbird.setRotationServo(FourPort.One, 0)
+    hummingbird.setRotationServo(FourPort.Two, 0)
+}
+function Autonomous () {
+    if (autonomous == 0) {
+        PoliceLedOn()
+        autonomous = 1
+        while (autonomous == 1) {
+            if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 3.5) {
+                Go_Backward()
+                basic.pause(700)
+                Stop()
+                if (randint(1, 2) == 1) {
+                    Turn(0, randint(10, 100))
+                } else {
+                    Turn(randint(10, 100), 0)
+                }
+            } else if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35) {
+                GoForward()
+                basic.pause(700)
+                Stop()
+                if (randint(1, 2) == 1) {
+                    Turn(0, randint(10, 100))
+                } else {
+                    Turn(randint(10, 100), 0)
+                }
+            }
+        }
+    }
+}
 function Go_Backward () {
     hummingbird.setRotationServo(FourPort.One, -100)
     hummingbird.setRotationServo(FourPort.Two, 55)
-}
-function RandomTurn () {
-    LeftOrRight = randint(1, 2)
-    if (LeftOrRight == 1) {
-    	
-    } else {
-    	
-    }
 }
 function Stop () {
     hummingbird.setRotationServo(FourPort.One, 0)
     hummingbird.setRotationServo(FourPort.Two, 0)
 }
-let LeftOrRight = 0
+let autonomous = 0
 hummingbird.startHummingbird()
 Stop()
 let direction = 0
-let autonomous = 0
+autonomous = 0
+// Autonomous
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
-        PoliceLedOn()
-        autonomous = 1
+        while (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5) {
+        	
+        }
+        Autonomous()
+        while (!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)) {
+        	
+        }
+        autonomous = 0
+        PoliceLedOff()
+        Stop()
     }
 })
 basic.forever(function () {
@@ -75,13 +110,13 @@ basic.forever(function () {
     }
 })
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 30.1 && hummingbird.getSensor(SensorType.Distance, ThreePort.One) > 12.1) {
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30) {
         GoForward()
         direction = 1
     }
 })
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30) {
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 30.1 && hummingbird.getSensor(SensorType.Distance, ThreePort.One) > 12.1) {
         GoForward()
         direction = 1
     }
