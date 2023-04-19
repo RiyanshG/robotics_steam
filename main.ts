@@ -1,8 +1,18 @@
-function GoForward () {
-    hummingbird.setRotationServo(FourPort.One, 100)
-    hummingbird.setRotationServo(FourPort.Two, -55)
+function PoliceLedOff () {
+    hummingbird.setTriLED(
+    TwoPort.Two,
+    0,
+    0,
+    0
+    )
+    hummingbird.setTriLED(
+    TwoPort.Two,
+    0,
+    0,
+    0
+    )
 }
-function PoliceLED () {
+function PoliceLedOn () {
     hummingbird.setTriLED(
     TwoPort.Two,
     255,
@@ -18,20 +28,36 @@ function PoliceLED () {
     )
     basic.pause(300)
 }
+function GoForward () {
+    hummingbird.setRotationServo(FourPort.One, 100)
+    hummingbird.setRotationServo(FourPort.Two, -55)
+}
 function Go_Backward () {
     hummingbird.setRotationServo(FourPort.One, -100)
     hummingbird.setRotationServo(FourPort.Two, 55)
+}
+function RandomTurn () {
+    LeftOrRight = randint(1, 2)
+    if (LeftOrRight == 1) {
+    	
+    } else {
+    	
+    }
 }
 function Stop () {
     hummingbird.setRotationServo(FourPort.One, 0)
     hummingbird.setRotationServo(FourPort.Two, 0)
 }
+let LeftOrRight = 0
 hummingbird.startHummingbird()
 Stop()
 let direction = 0
-hummingbird.setLED(ThreePort.Two, 100)
+let autonomous = 0
+// stop if detects walls
 basic.forever(function () {
-    PoliceLED()
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 || hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5) {
+        Stop()
+    }
 })
 basic.forever(function () {
     if (direction == 0) {
@@ -43,17 +69,9 @@ basic.forever(function () {
     }
 })
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.One) < 30) {
-        if (direction == 1) {
-            Stop()
-            direction = 0
-        } else {
-            GoForward()
-            direction = 1
-        }
-    } else if (hummingbird.getSensor(SensorType.Light, ThreePort.One) > 35 && direction == 1) {
-        Stop()
-        direction = 0
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
+        PoliceLedOn()
+        autonomous = 0
     }
 })
 basic.forever(function () {
@@ -66,6 +84,20 @@ basic.forever(function () {
             direction = -1
         }
     } else if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) > 15 && direction == -1) {
+        Stop()
+        direction = 0
+    }
+})
+basic.forever(function () {
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30) {
+        if (direction == 1) {
+            Stop()
+            direction = 0
+        } else {
+            GoForward()
+            direction = 1
+        }
+    } else if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 35 && direction == 1) {
         Stop()
         direction = 0
     }
