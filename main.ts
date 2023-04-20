@@ -12,6 +12,11 @@ function PoliceLedOff () {
     0
     )
 }
+function Wait_While (boolean: boolean) {
+    while (boolean) {
+    	
+    }
+}
 function PoliceLedOn () {
     hummingbird.setTriLED(
     TwoPort.Two,
@@ -82,13 +87,9 @@ autonomous = 0
 // Autonomous
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
-        while (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5) {
-        	
-        }
+        Wait_While(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)
         Autonomous()
-        while (!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)) {
-        	
-        }
+        Wait_While(!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5))
         autonomous = 0
         PoliceLedOff()
         Stop()
