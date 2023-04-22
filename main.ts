@@ -17,21 +17,28 @@ function Wait_While (boolean: boolean) {
     	
     }
 }
+// 1: yellow
+// 2: yellow
+// 3: red
+// 1: tri red
+// 2: tri red/blue
 function PoliceLedOn () {
-    hummingbird.setTriLED(
-    TwoPort.Two,
-    255,
-    0,
-    0
-    )
-    basic.pause(300)
-    hummingbird.setTriLED(
-    TwoPort.Two,
-    0,
-    0,
-    255
-    )
-    basic.pause(300)
+    while (autonomous == 1) {
+        hummingbird.setTriLED(
+        TwoPort.Two,
+        255,
+        0,
+        0
+        )
+        basic.pause(300)
+        hummingbird.setTriLED(
+        TwoPort.Two,
+        0,
+        0,
+        255
+        )
+        basic.pause(300)
+    }
 }
 function GoForward () {
     hummingbird.setRotationServo(FourPort.One, 100)
@@ -79,11 +86,21 @@ function Stop () {
     hummingbird.setRotationServo(FourPort.One, 0)
     hummingbird.setRotationServo(FourPort.Two, 0)
 }
+// 1: yellow
+// 2: yellow
+// 3: red
+// 1: tri red
+// 2: tri red/blue
 let autonomous = 0
 hummingbird.startHummingbird()
 Stop()
 let direction = 0
 autonomous = 0
+hummingbird.setLED(ThreePort.One, 100)
+hummingbird.setLED(ThreePort.Two, 100)
+basic.forever(function () {
+    basic.showNumber(hummingbird.getSensor(SensorType.Light, ThreePort.Two))
+})
 // Autonomous
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
@@ -97,28 +114,38 @@ basic.forever(function () {
 })
 basic.forever(function () {
     if (direction == 0) {
-        hummingbird.setLED(ThreePort.One, 100)
-        hummingbird.setLED(ThreePort.Two, 100)
+        hummingbird.setLED(ThreePort.Three, 100)
+        hummingbird.setTriLED(
+        TwoPort.One,
+        255,
+        0,
+        0
+        )
     } else {
-        hummingbird.setLED(ThreePort.One, 0)
-        hummingbird.setLED(ThreePort.Two, 0)
+        hummingbird.setLED(ThreePort.Three, 0)
+        hummingbird.setTriLED(
+        TwoPort.One,
+        0,
+        0,
+        0
+        )
     }
 })
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12) {
-        Go_Backward()
-        direction = -1
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30)) {
+        if (autonomous == 0) {
+            Stop()
+            Go_Backward()
+            direction = -1
+        }
     }
 })
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30) {
-        GoForward()
-        direction = 1
-    }
-})
-basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 30.1 && hummingbird.getSensor(SensorType.Distance, ThreePort.One) > 12.1) {
-        GoForward()
-        direction = 1
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
+        if (autonomous == 0) {
+            Stop()
+            GoForward()
+            direction = 1
+        }
     }
 })
