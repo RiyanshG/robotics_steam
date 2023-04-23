@@ -35,6 +35,7 @@ function PoliceLedOn () {
         basic.pause(300)
     }
 }
+// Make the car go forward
 function GoForward () {
     hummingbird.setRotationServo(FourPort.One, 100)
     hummingbird.setRotationServo(FourPort.Two, -55)
@@ -52,7 +53,7 @@ function Autonomous () {
         autonomous = 1
         while (autonomous == 1) {
             if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 3.5) {
-                Go_Backward()
+                GoBackward()
                 basic.pause(700)
                 Stop()
                 if (randint(1, 2) == 1) {
@@ -73,14 +74,16 @@ function Autonomous () {
         }
     }
 }
-function Go_Backward () {
+// Make the car go backward.
+function GoBackward () {
     hummingbird.setRotationServo(FourPort.One, -100)
     hummingbird.setRotationServo(FourPort.Two, 55)
 }
+// Make the car stop
 function Stop () {
-    // Right Wheel
+    // right front wheel
     hummingbird.setRotationServo(FourPort.One, 0)
-    // Left Wheel
+    // left front wheel
     hummingbird.setRotationServo(FourPort.Two, 0)
 }
 // direction: -1: backward, 0: stop, 1: forward
@@ -95,7 +98,8 @@ function Stop () {
 // 2: red/blue tri-led at the top of the car(police lights)
 // .................................................................................
 // The sensors are:
-// 
+// Light Sensor: The sensor at the back. When it detects something, the car moves forward.
+// Distance Sensor: The sensor at the front. When it detects something, the car moves backward.
 let autonomous = 0
 hummingbird.startHummingbird()
 Stop()
@@ -103,12 +107,32 @@ let direction = 0
 autonomous = 0
 hummingbird.setLED(ThreePort.One, 100)
 hummingbird.setLED(ThreePort.Two, 100)
-// If the 
+// If the distance sensor detects something, then set the direction to backward
+basic.forever(function () {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30)) {
+        if (autonomous == 0) {
+            direction = -1
+        }
+    }
+})
+// temporary
+basic.forever(function () {
+    basic.showNumber(hummingbird.getSensor(SensorType.Light, ThreePort.Two))
+})
+// Move or stop based on the direction variable
+basic.forever(function () {
+    if (direction == -1) {
+        GoBackward()
+    } else if (direction == 0) {
+        Stop()
+    } else {
+        GoForward()
+    }
+})
+// If the light sensor detects something, set the direction to forward
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
         if (autonomous == 0) {
-            Stop()
-            GoForward()
             direction = 1
         }
     }
@@ -133,9 +157,11 @@ basic.forever(function () {
         )
     }
 })
-// temporary
+// If no sensors detect anything, then set the direction to stop.
 basic.forever(function () {
-    basic.showNumber(hummingbird.getSensor(SensorType.Light, ThreePort.Two))
+    if (!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30) && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
+        direction = 0
+    }
 })
 // Autonomous code:
 // Will run if both sensors detect something close to them
@@ -143,18 +169,10 @@ basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
         Wait_While(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)
         Autonomous()
+        basic.pause(6500)
         Wait_While(!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5))
         autonomous = 0
         PoliceLedOff()
         Stop()
-    }
-})
-basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30)) {
-        if (autonomous == 0) {
-            Stop()
-            Go_Backward()
-            direction = -1
-        }
     }
 })
