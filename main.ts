@@ -132,14 +132,6 @@ basic.forever(function () {
         GoForward()
     }
 })
-// If the light sensor detects something, set the direction to forward
-basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
-        if (autonomous == 0) {
-            direction = 1
-        }
-    }
-})
 // If the car stops, then turn on the back red LEDs, otherwise turn them off.
 basic.forever(function () {
     if (direction == 0) {
@@ -158,6 +150,14 @@ basic.forever(function () {
         0,
         0
         )
+    }
+})
+// If the light sensor detects something, set the direction to forward
+basic.forever(function () {
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
+        if (autonomous == 0) {
+            direction = 1
+        }
     }
 })
 // If no sensors detect anything, then set the direction to stop.
