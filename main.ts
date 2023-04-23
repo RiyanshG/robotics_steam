@@ -1,3 +1,4 @@
+// Turn of the police light.
 function PoliceLedOff () {
     hummingbird.setTriLED(
     TwoPort.Two,
@@ -12,6 +13,7 @@ function PoliceLedOff () {
     0
     )
 }
+// Wait while something is true. Once it becomes false, continue the code.
 function Wait_While (boolean: boolean) {
     while (boolean) {
     	
@@ -47,6 +49,7 @@ function Turn (motor1: number, motor2: number) {
     hummingbird.setRotationServo(FourPort.One, 0)
     hummingbird.setRotationServo(FourPort.Two, 0)
 }
+// Run the car on its own and if it detects something, move away.
 function Autonomous () {
     if (autonomous == 0) {
         PoliceLedOn()
@@ -137,7 +140,7 @@ basic.forever(function () {
         }
     }
 })
-// If the car stops, then turn on the back red LEDs
+// If the car stops, then turn on the back red LEDs, otherwise turn them off.
 basic.forever(function () {
     if (direction == 0) {
         hummingbird.setLED(ThreePort.Three, 100)
@@ -163,7 +166,7 @@ basic.forever(function () {
         direction = 0
     }
 })
-// Autonomous code:
+// Code to turn on autonomous
 // Will run if both sensors detect something close to them
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
