@@ -17,11 +17,6 @@ function Wait_While (boolean: boolean) {
     	
     }
 }
-// 1: yellow
-// 2: yellow
-// 3: red
-// 1: tri red
-// 2: tri red/blue
 function PoliceLedOn () {
     while (autonomous == 1) {
         hummingbird.setTriLED(
@@ -83,14 +78,24 @@ function Go_Backward () {
     hummingbird.setRotationServo(FourPort.Two, 55)
 }
 function Stop () {
+    // Right Wheel
     hummingbird.setRotationServo(FourPort.One, 0)
+    // Left Wheel
     hummingbird.setRotationServo(FourPort.Two, 0)
 }
-// 1: yellow
-// 2: yellow
-// 3: red
-// 1: tri red
-// 2: tri red/blue
+// direction: -1: backward, 0: stop, 1: forward
+// LED 1: left front yellow light
+// LED 2: right front yellow light
+// .................................................................................
+// The LEDs are:
+// 1: left front yellow light
+// 2: right front yellow light
+// 3: left back red light
+// 1: right back red light
+// 2: red/blue tri-led at the top of the car(police lights)
+// .................................................................................
+// The sensors are:
+// 
 let autonomous = 0
 hummingbird.startHummingbird()
 Stop()
@@ -98,20 +103,17 @@ let direction = 0
 autonomous = 0
 hummingbird.setLED(ThreePort.One, 100)
 hummingbird.setLED(ThreePort.Two, 100)
+// If the 
 basic.forever(function () {
-    basic.showNumber(hummingbird.getSensor(SensorType.Light, ThreePort.Two))
-})
-// Autonomous
-basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
-        Wait_While(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)
-        Autonomous()
-        Wait_While(!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5))
-        autonomous = 0
-        PoliceLedOff()
-        Stop()
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
+        if (autonomous == 0) {
+            Stop()
+            GoForward()
+            direction = 1
+        }
     }
 })
+// If the car stops, then turn on the back red LEDs
 basic.forever(function () {
     if (direction == 0) {
         hummingbird.setLED(ThreePort.Three, 100)
@@ -131,21 +133,28 @@ basic.forever(function () {
         )
     }
 })
+// temporary
+basic.forever(function () {
+    basic.showNumber(hummingbird.getSensor(SensorType.Light, ThreePort.Two))
+})
+// Autonomous code:
+// Will run if both sensors detect something close to them
+basic.forever(function () {
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
+        Wait_While(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)
+        Autonomous()
+        Wait_While(!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5))
+        autonomous = 0
+        PoliceLedOff()
+        Stop()
+    }
+})
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30)) {
         if (autonomous == 0) {
             Stop()
             Go_Backward()
             direction = -1
-        }
-    }
-})
-basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
-        if (autonomous == 0) {
-            Stop()
-            GoForward()
-            direction = 1
         }
     }
 })
