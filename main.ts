@@ -125,7 +125,7 @@ let direction = 0
 autonomous = 0
 hummingbird.setLED(ThreePort.One, 100)
 hummingbird.setLED(ThreePort.Two, 100)
-// If the distance sensor detects something, then set the direction to backward
+// If the distance sensor at the front detects something, then set the direction to backward
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) >= 8) {
         if (autonomous == 0) {
@@ -163,7 +163,7 @@ basic.forever(function () {
         )
     }
 })
-// If the light sensor detects something, set the direction to forward
+// If the distance sensor at the back detects something, set the direction to forward
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 8 && hummingbird.getSensor(SensorType.Distance, ThreePort.One) >= 8) {
         if (autonomous == 0) {
