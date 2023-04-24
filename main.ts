@@ -1,4 +1,4 @@
-// Turn of the police light.
+// Turn off the police light.
 function PoliceLedOff () {
     hummingbird.setTriLED(
     TwoPort.Two,
@@ -19,6 +19,7 @@ function Wait_While (boolean: boolean) {
     	
     }
 }
+// Turn on the police light.
 function PoliceLedOn () {
     while (autonomous == 1) {
         hummingbird.setTriLED(
@@ -42,6 +43,7 @@ function GoForward () {
     hummingbird.setRotationServo(FourPort.One, 100)
     hummingbird.setRotationServo(FourPort.Two, -55)
 }
+// Make the robot turn
 function Turn (motor1: number, motor2: number) {
     hummingbird.setRotationServo(FourPort.One, motor1)
     hummingbird.setRotationServo(FourPort.Two, motor2)
@@ -52,6 +54,7 @@ function Turn (motor1: number, motor2: number) {
 // Run the car on its own and if it detects something, move away.
 function Autonomous () {
     if (autonomous == 0) {
+        Stop()
         PoliceLedOn()
         autonomous = 1
         while (autonomous == 1) {
@@ -112,15 +115,11 @@ hummingbird.setLED(ThreePort.One, 100)
 hummingbird.setLED(ThreePort.Two, 100)
 // If the distance sensor detects something, then set the direction to backward
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30)) {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 5.5)) {
         if (autonomous == 0) {
             direction = -1
         }
     }
-})
-// temporary
-basic.forever(function () {
-    basic.showNumber(hummingbird.getSensor(SensorType.Light, ThreePort.Two))
 })
 // Move or stop based on the direction variable
 basic.forever(function () {
@@ -154,7 +153,7 @@ basic.forever(function () {
 })
 // If the light sensor detects something, set the direction to forward
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
+    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 5.5 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8)) {
         if (autonomous == 0) {
             direction = 1
         }
@@ -162,20 +161,27 @@ basic.forever(function () {
 })
 // If no sensors detect anything, then set the direction to stop.
 basic.forever(function () {
-    if (!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 30) && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 12)) {
+    if (!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 8) && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) > 5.5)) {
         direction = 0
     }
 })
 // Code to turn on autonomous
 // Will run if both sensors detect something close to them
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 25 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
-        Wait_While(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5)
-        Autonomous()
-        basic.pause(6500)
-        Wait_While(!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 3.5))
-        autonomous = 0
-        PoliceLedOff()
-        Stop()
+    if (input.buttonIsPressed(Button.A)) {
+        Wait_While(input.buttonIsPressed(Button.A))
+        if (autonomous == 0) {
+            Autonomous()
+            autonomous = 1
+        } else {
+            autonomous = 0
+            PoliceLedOff()
+        }
     }
+    Wait_While(!(input.buttonIsPressed(Button.A)))
+    autonomous = 0
+    PoliceLedOff()
+})
+basic.forever(function () {
+    basic.showNumber(autonomous)
 })
