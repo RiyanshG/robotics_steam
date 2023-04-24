@@ -43,6 +43,15 @@ function GoForward () {
     hummingbird.setRotationServo(FourPort.One, 100)
     hummingbird.setRotationServo(FourPort.Two, -55)
 }
+// Code to turn on autonomous
+// Will run if button A is pressed
+// Use Either This Code or the code below
+input.onButtonPressed(Button.A, function () {
+    Autonomous()
+    Wait_While(!(input.buttonIsPressed(Button.A)))
+    autonomous = 0
+    PoliceLedOff()
+})
 // Make the robot turn
 function Turn (motor1: number, motor2: number) {
     hummingbird.setRotationServo(FourPort.One, motor1)
@@ -55,10 +64,11 @@ function Turn (motor1: number, motor2: number) {
 function Autonomous () {
     if (autonomous == 0) {
         Stop()
-        PoliceLedOn()
         autonomous = 1
+        PoliceLedOn()
         while (autonomous == 1) {
-            if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 3.5) {
+            GoForward()
+            if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8) {
                 GoBackward()
                 basic.pause(700)
                 Stop()
@@ -67,7 +77,7 @@ function Autonomous () {
                 } else {
                     Turn(randint(10, 100), 0)
                 }
-            } else if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 35) {
+            } else if (hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 8) {
                 GoForward()
                 basic.pause(700)
                 Stop()
@@ -79,6 +89,8 @@ function Autonomous () {
             }
         }
     }
+    autonomous = 0
+    PoliceLedOff()
 }
 // Make the car go backward.
 function GoBackward () {
@@ -104,8 +116,8 @@ function Stop () {
 // 2: red/blue tri-led at the top of the car(police lights)
 // .................................................................................
 // The sensors are:
-// Light Sensor: The sensor at the back. When it detects something, the car moves forward.
-// Distance Sensor: The sensor at the front. When it detects something, the car moves backward.
+// Distance Sensor 1: The sensor at the front. When it detects something, the car moves backward.
+// Distance Sensor 2: The sensor at the back. When it detects something, the car moves forward.
 let autonomous = 0
 hummingbird.startHummingbird()
 Stop()
@@ -115,7 +127,7 @@ hummingbird.setLED(ThreePort.One, 100)
 hummingbird.setLED(ThreePort.Two, 100)
 // If the distance sensor detects something, then set the direction to backward
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8 && !(hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 5.5)) {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) >= 8) {
         if (autonomous == 0) {
             direction = -1
         }
@@ -153,7 +165,7 @@ basic.forever(function () {
 })
 // If the light sensor detects something, set the direction to forward
 basic.forever(function () {
-    if (hummingbird.getSensor(SensorType.Light, ThreePort.Two) > 5.5 && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8)) {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 8 && hummingbird.getSensor(SensorType.Distance, ThreePort.One) >= 8) {
         if (autonomous == 0) {
             direction = 1
         }
@@ -161,27 +173,7 @@ basic.forever(function () {
 })
 // If no sensors detect anything, then set the direction to stop.
 basic.forever(function () {
-    if (!(hummingbird.getSensor(SensorType.Light, ThreePort.Two) < 8) && !(hummingbird.getSensor(SensorType.Distance, ThreePort.One) > 5.5)) {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.Two) >= 8 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) >= 8) {
         direction = 0
     }
-})
-// Code to turn on autonomous
-// Will run if both sensors detect something close to them
-basic.forever(function () {
-    if (input.buttonIsPressed(Button.A)) {
-        Wait_While(input.buttonIsPressed(Button.A))
-        if (autonomous == 0) {
-            Autonomous()
-            autonomous = 1
-        } else {
-            autonomous = 0
-            PoliceLedOff()
-        }
-    }
-    Wait_While(!(input.buttonIsPressed(Button.A)))
-    autonomous = 0
-    PoliceLedOff()
-})
-basic.forever(function () {
-    basic.showNumber(autonomous)
 })
