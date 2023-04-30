@@ -66,6 +66,7 @@ function Autonomous () {
         Stop()
         autonomous = 1
         PoliceLedOn()
+        policeSirenOn()
         while (autonomous == 1) {
             GoForward()
             if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 8) {
@@ -91,6 +92,14 @@ function Autonomous () {
     }
     autonomous = 0
     PoliceLedOff()
+    policeSirenOff()
+}
+function policeSirenOn () {
+    music.playTone(523, music.beat(BeatFraction.Whole))
+    music.playTone(622, music.beat(BeatFraction.Whole))
+}
+function policeSirenOff () {
+    music.stopAllSounds()
 }
 // Make the car go backward.
 function GoBackward () {
