@@ -43,15 +43,6 @@ function GoForward () {
     hummingbird.setRotationServo(FourPort.One, 100)
     hummingbird.setRotationServo(FourPort.Two, -55)
 }
-// Code to turn on autonomous
-// Will run if button A is pressed
-// Use Either This Code or the code below
-input.onButtonPressed(Button.A, function () {
-    Autonomous()
-    Wait_While(!(input.buttonIsPressed(Button.A)))
-    autonomous = 0
-    PoliceLedOff()
-})
 // Make the robot turn
 function Turn (motor1: number, motor2: number) {
     hummingbird.setRotationServo(FourPort.One, motor1)
@@ -184,5 +175,23 @@ basic.forever(function () {
 basic.forever(function () {
     if (hummingbird.getSensor(SensorType.Distance, ThreePort.Two) >= 8 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) >= 8) {
         direction = 0
+    }
+})
+basic.forever(function () {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 2.5 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
+        Autonomous()
+        Wait_While(!(input.buttonIsPressed(Button.A)))
+        autonomous = 0
+        PoliceLedOff()
+    }
+})
+basic.forever(function () {
+    if (hummingbird.getSensor(SensorType.Distance, ThreePort.One) < 2.5 && hummingbird.getSensor(SensorType.Distance, ThreePort.Two) < 2.5) {
+        if (autonomous == 0) {
+            Autonomous()
+        } else {
+            autonomous = 0
+            PoliceLedOff()
+        }
     }
 })
